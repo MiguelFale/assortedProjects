@@ -40,7 +40,7 @@ int main(void){
 	case 4:
 	 maiorprimo = maiorPrimo(numero);
 	 if(maiorprimo) {
-		 printf("%s%u\n",resposta,maiorPrimo(numero));
+		 printf("%s%u\n",resposta,maiorprimo);
 	 } else {
 		printf("%snao existe!\n",resposta);
 	}
@@ -85,7 +85,7 @@ boolean ehPrimo(unsigned int n) {
    return false;
  }
 
- return n>=2;
+ return n>=3;
 }
 
 unsigned int contaPrimos(unsigned int n) {
@@ -120,6 +120,7 @@ void listaGemeos(unsigned int n) {
 
  for(i=2;i<=n;i++) {
   if(ehPrimo(i)) {
+    printf("OMG, %u\n",i-prevprimo);
     if(i-prevprimo == 2) {
      	printf("(%u, %u) ",prevprimo,i);
 	firstpair = true;
