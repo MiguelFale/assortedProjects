@@ -115,12 +115,12 @@ unsigned int maiorPrimo(unsigned int n) {
 
 void listaGemeos(unsigned int n) {
  unsigned int i;
- int prevprimo = -1;
+ unsigned int prevprimo = 2;
  boolean firstpair = false;
 
- for(i=2;i<=n;i++) {
+ for(i=3;i<=n;i++) {
   if(ehPrimo(i)) {
-    printf("OMG, %u\n",i-prevprimo);
+    /*printf("OMG, %u\n",i-prevprimo); 2 - -1 = 3... e nao 2 - MAXUI */
     if(i-prevprimo == 2) {
      	printf("(%u, %u) ",prevprimo,i);
 	firstpair = true;
