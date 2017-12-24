@@ -41,7 +41,8 @@ int devolvegrau(double v[],unsigned int n);
 
 int main(void){
 
-   double v1[DIM]={0.0}, v2[DIM]={0.0},v3[DIM]={0.0},v4[DIM]={0.0},v5[DIM]={0.0};
+  /*atencao! o produto precisa de ter dobro do espaco! no maximo a soma dos elems é 20 (10+10)*/
+   double v1[DIM]={0.0}, v2[DIM]={0.0},v3[DIM]={0.0},v4[DIM]={0.0},v5[DIMX]={0.0};
    double p1[DIMX]={0.0},p2[DIMX]={0.0},p3[DIMX]={0.0};
    int grau1, grau2, grau3, grau4, grau5;
    unsigned int p3k;
@@ -88,88 +89,43 @@ int main(void){
    return 0;
 }
 
-void imprimeGrafico(double yval[]) {
-  unsigned int i,k;
-  boolean firstPos = true,
-   firstNul = true,
-   firstNeg = true,
-   firstBase = true,
-   firstNum = true,
-   firstNum10 = true;
+/*correr VALGRIND*/
+int prodPolinomios( double v1[], double v2[], double v3[], unsigned int dim ) {
 
-  /*1 pos, 2 ou 4 ou 6 ou 7 empty, 3 null, 5 neg, 8 x, 9 aux*/
-  for(i=1;i<=9;i++) {
-    for(k=0;k<DIMX;k++) {
-      switch(i) {
-        case 1:
-            printf("%s",firstPos? "Pos|" : "");
-            firstPos = false;
-            printf(" %s", comparaZero(yval[k]) == 1 ? "-" : " ");
-            break;
-        case 2:
-        case 4:
-        case 6:
-          printf("%4s","|");
-          break;
-        case 3:
-            printf("%s",firstNul? "Nul|" : "");
-            firstNul = false;
-            printf(" %s", comparaZero(yval[k]) == 0 ? "-" : " ");
-            break;
-        case 5:
-            printf("%s",firstNeg? "Neg|" : "");
-            firstNeg = false;
-            printf(" %s", comparaZero(yval[k]) == -1 ? "-" : " ");
-            break;
-        case 7:
-          if(firstBase) {
-            printf("%4s","|");
-            firstBase = false;
-          }
-          printf("__");
-          break;
-        case 8:
-          if(firstNum) {
-            printf("%4s"," ");
-            firstNum = false;
-          }
-          printf(" %d",(k+1)%10);
-          break;
-        default:
-          if(firstNum10) {
-            printf("%4s"," ");
-            firstNum10 = false;
-          }
-          if((k+1)%10 == 0) {
-            printf("%d",k+1);
-          } else {
-            printf("  ");
-          }
-          break;
-      }
-      if(i%2==0 && i < 8) {
-        break;
-      }
-    }
-    printf("\n");
-  }
+  int grauV1 = devolvegrau ( v1, dim );
+  int grauV2 = devolvegrau ( v2, dim );
+  int k;
+  int j;
+
+  /* Cada elemento de v1 vai multiplicar por todos os elementos de v2 */
+  /* Existem posicoes de v3 que vao ser acedidas mais do que uma vez,
+     de modo a somar os monomios de grau identico */
+  for ( k = 0; k < grauV1+1; k++ )
+    for ( j = 0; j < grauV2+1; j++)
+      v3[k+j] += v1[k] * v2[j];
+
+  return devolvegrau ( v3, dim*2 );
 }
 
-
+/*a original esta parcialmente melhor. esta percorre DIM elementos
 int prodPolinomios(double v1[], double v2[], double v3[], unsigned int dim) {
+
+    int grauV1 = devolveGrau ( v1, n );
+  int grauV2 = devolveGrau ( v2, n );
     unsigned int i,k;
     double tempsum;
-  for(i=0;i<dim;i++) {
-    /*calculo de cada d*/
+
+  for(i=0;i<grauV1+1;i++) {
+    calculo de cada d
     tempsum = 0.0;
-    for(k=0;k<=i;k++) {
+    for(k=0;k<grauV2+1;k++) {
       tempsum += v1[k] * v2[i-k];
     }
     v3[i] = tempsum;
   }
 
   return devolvegrau(v3,dim);
-}
+}*/
 
 int comblinear(double v1[], double v2[], double v3[], unsigned int dim) {
    double c;
@@ -309,3 +265,109 @@ int devolvegrau(double v[],unsigned int n) {
 
   return maxgrau;
 }
+
+void imprimeGrafico( double yval[] ) {
+
+  int i;
+
+  /* Imprime espaco com traco ou dois espacos, consoante a situacao */
+  printf ( "Pos|" );
+  for ( i = 0; i < 20; i++ )
+    printf ( "%s", comparaZero( yval[i] ) == 1 ? " -" : "  " );
+
+  printf ( "\n   |\nNul|" );
+  for ( i = 0; i < 20; i++ )
+    printf ( "%s", comparaZero ( yval[i] ) == 0 ? " -" : "  " );
+
+  printf ( "\n   |\nNeg|" );
+  for ( i = 0; i < 20; i++ )
+    printf ( "%s", comparaZero ( yval[i] ) == -1 ? " -" : "  " );
+
+  printf ( "\n   |\n   |" );
+
+  /* Imprime o eixo horizontal */
+  for ( i = 0; i < 20; i++ )
+    printf ("__");
+  printf ( "\n    " );
+
+  /* Imprime os valores do eixo horizontal */
+  for ( i = 1; i <= 20; i++ ) {
+    if ( i >= 10 && i < 20 )
+      printf ( " %d", i-10 );
+    else if ( i == 20 )
+      printf ( " %d", i-20 );
+    else
+      printf ( " %d", i );
+  }
+
+  printf ( "\n%24d%20d\n", 10, 20 );
+
+}
+
+/* a original esta' melhor
+void imprimeGrafico(double yval[]) {
+  unsigned int i,k;
+  boolean firstPos = true,
+   firstNul = true,
+   firstNeg = true,
+   firstBase = true,
+   firstNum = true,
+   firstNum10 = true;
+
+  1 pos, 2 ou 4 ou 6 ou 7 empty, 3 null, 5 neg, 8 x, 9 aux
+  for(i=1;i<=9;i++) {
+    for(k=0;k<DIMX;k++) {
+      switch(i) {
+        case 1:
+            printf("%s",firstPos? "Pos|" : "");
+            firstPos = false;
+            printf(" %s", comparaZero(yval[k]) == 1 ? "-" : " ");
+            break;
+        case 2:
+        case 4:
+        case 6:
+          printf("%4s","|");
+          break;
+        case 3:
+            printf("%s",firstNul? "Nul|" : "");
+            firstNul = false;
+            printf(" %s", comparaZero(yval[k]) == 0 ? "-" : " ");
+            break;
+        case 5:
+            printf("%s",firstNeg? "Neg|" : "");
+            firstNeg = false;
+            printf(" %s", comparaZero(yval[k]) == -1 ? "-" : " ");
+            break;
+        case 7:
+          if(firstBase) {
+            printf("%4s","|");
+            firstBase = false;
+          }
+          printf("__");
+          break;
+        case 8:
+          if(firstNum) {
+            printf("%4s"," ");
+            firstNum = false;
+          }
+          printf(" %d",(k+1)%10);
+          break;
+        default:
+          if(firstNum10) {
+            printf("%4s"," ");
+            firstNum10 = false;
+          }
+          if((k+1)%10 == 0) {
+            printf("%d",k+1);
+          } else {
+            printf("  ");
+          }
+          break;
+      }
+      if(i%2==0 && i < 8) {
+        break;
+      }
+    }
+    printf("\n");
+  }
+}*/
